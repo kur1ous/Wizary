@@ -12,6 +12,6 @@ class Level:
 		self.player = Player(self.all_sprites)
 
 	def run(self,dt):
-		self.display_surface.fill('black')
+		self.display_surface.fill('white')
+		self.all_sprites.update(dt)
 		self.all_sprites.draw(self.display_surface)
-		self.all_sprites.update()

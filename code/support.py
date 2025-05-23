@@ -7,7 +7,7 @@ class Spritesheet(object):
         self.sprite_sheet = pg.image.load(filename).convert_alpha()
 
     def get_sprite(self, x, y, w, h):
-        sprite = pg.Surface((w,h))
+        sprite = pg.Surface((w,h), pg.SRCALPHA)
         sprite.set_colorkey((0,0,0))
         sprite.blit(self.sprite_sheet, (0,0), (x,y,w,h))
         return sprite
