@@ -9,4 +9,5 @@ KEYBINDS = {
     'down' : pg.K_s,
     'left' : pg.K_a,
     'right' : pg.K_d,
+    'attack' : pg.K_e,
 }
