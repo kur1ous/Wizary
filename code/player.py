@@ -13,18 +13,24 @@ class Player(pg.sprite.Sprite):
 
         self.base_speed = 60
 
-        self.status = "witch"
+        self.status = 'witch_idle'
 
-        self.animations = import_folder_dict("graphics\player")
-        print(self.animations)
+        self.animations = import_folder_dict("Wizary\graphics\player")
+        print(f"anims: {self.animations[self.status]}")
 
-        self.frames = load_sheet(f"graphics/player/witch_idle.png", 32, 48, 6)
-        print(f"Frames: {self.frames}")
+
+        self.frames = load_sheet(f"Wizary\graphics\player\{self.status}.png", 32, 48)
+        print(f"frame: {self.frames}")
+
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect(topleft=(100, 100))
 
         self.direction = pg.Vector2()
         self.pos = pg.Vector2(self.rect.topleft)
+
+    # @property
+    # def image(self):
+    #     return self.animations[self.status]
 
     def animate(self, dt):
         self.frame_index += self.animation_speed * dt
