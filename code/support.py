@@ -6,15 +6,14 @@ def load_sheet(filename, frame_width, frame_height):
     sheet = pg.image.load(filename).convert_alpha()
     sheet_width, sheet_height = sheet.get_size()
     print(sheet_width, sheet_height)
-    
-    num_frames = sheet_height // sheet_width
-
 
     frames = []
-    for y in range(num_frames):
+    y = 0
+    while (y + 1) * frame_height <= sheet_height:
         rect = pg.Rect(0, y * frame_height, frame_width, frame_height)
-        if rect.bottom <= sheet_height:
-            frames.append(sheet.subsurface(rect))
+        frames.append(sheet.subsurface(rect))
+        y += 1
+
     return frames
 
 def import_folder(folder):
