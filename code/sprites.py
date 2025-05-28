@@ -8,5 +8,5 @@ class Generic(pg.sprite.Sprite):
         super().__init__(groups)
         self.image = surface
         self.rect = self.image.get_frect(topleft=pos)
-        # self.hitbox = self.rect.inflate(-0.2* self.rect.width, -0.75* self.rect.height)
+        self.hitbox = self.rect.inflate(-0.2* self.rect.width, -0.75* self.rect.height)
         self.z = z
