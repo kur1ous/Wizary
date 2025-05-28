@@ -5,7 +5,6 @@ import os, sys
 def load_sheet(filename, frame_width, frame_height):
     sheet = pg.image.load(filename).convert_alpha()
     sheet_width, sheet_height = sheet.get_size()
-    print(sheet_width, sheet_height)
 
     frames = []
     y = 0

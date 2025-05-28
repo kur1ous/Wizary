@@ -11,3 +11,8 @@ KEYBINDS = {
     'right' : pg.K_d,
     'attack' : pg.K_e,
 }
+
+LAYERS = {
+    'main' : 7,
+    'ground' : 1,
+}

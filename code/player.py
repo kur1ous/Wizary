@@ -4,19 +4,24 @@ from support import load_sheet, import_assets, import_folder, import_folder_dict
 from timehandle import Timer
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, groups):
+    def __init__(self, pos, groups):
         super().__init__(groups)
 
-        self.input_lock = False
+
 
         self.frame_index = 0
+
         self.animation_speed = 6  
 
         self.base_speed = 60
 
         self.status = 'witch_idle'
 
-        self.locked = False
+        self.z = LAYERS['main']
+
+        self.right = True
+
+
 
         self.animations = { 
             "witch_idle" : load_sheet(f"Wizary\graphics\player\witch_idle.png", 32, 48),
@@ -32,8 +37,11 @@ class Player(pg.sprite.Sprite):
             "ice_ball",
         ]
 
+        self.selected_spell = self.spells[0]
+
         self.timers = {
-            'spell use' : Timer(2, self.spell_charge),
+            'spell charge' : Timer(2, self.spell_charge),
+            'spell fire' : Timer(0.999, self.spell_fire)
         }
 
         print(f"anims: {self.animations[self.status]}")
@@ -44,10 +52,10 @@ class Player(pg.sprite.Sprite):
 
 
         # self.image = self.frames[self.frame_index]
-        self.rect = self.image.get_rect(topleft=(100, 100))
+        self.rect = self.image.get_rect(center=(pos))
 
         self.direction = pg.Vector2()
-        self.pos = pg.Vector2(self.rect.topleft)
+        self.pos = pg.Vector2(self.rect.midbottom)
 
     @property
     def frames(self):
@@ -55,7 +63,13 @@ class Player(pg.sprite.Sprite):
 
     @property
     def image(self):
-        return self.frames[int(self.frame_index)]
+        frame = self.frames[int(self.frame_index)]
+        if not self.right:
+            frame = pg.transform.flip(frame, True, False)
+        return frame    
+    @property
+    def locked(self):
+        return self.timers['spell charge'].active or self.timers['spell fire'].active
 
     def animate(self, dt):
         self.frame_index += self.animation_speed * dt
@@ -71,12 +85,16 @@ class Player(pg.sprite.Sprite):
         self.direction.y = keys[KEYBINDS['down']] - keys[KEYBINDS['up']]
         self.direction.x = keys[KEYBINDS['right']] - keys[KEYBINDS['left']]
 
+        if self.direction.x > 0:
+            self.right = True
+        elif self.direction.x < 0:
+            self.right = False
+
 
         if keys_just_pressed[KEYBINDS['attack']]:
-            print("testing")
-            self.timers['spell use'].activate()
+            self.timers['spell charge'].activate()
 
-            print("activated!")
+
 
 
 
@@ -84,11 +102,20 @@ class Player(pg.sprite.Sprite):
         self.status = self.status.split("_")[0]
         keys = pg.key.get_pressed()
 
-        if self.direction.magnitude() > 0:
+        if self.timers['spell charge'].active:
+            self.status += "_charge"
+
+        elif self.timers['spell fire'].active:
+            self.status += "_attack"
+
+        elif self.direction.magnitude() > 0:
             self.status += "_run"
 
         elif self.direction.magnitude() == 0:
             self.status += "_idle"
+
+
+
 
         # elif self.spell_charge(True):
         #     self.status += "_charge"
@@ -102,6 +129,7 @@ class Player(pg.sprite.Sprite):
             timer.update(dt)
 
     def movement(self, dt):
+        if self.locked: return
         #simple movement on x and y plane
         if self.direction.magnitude() != 0:
             self.direction.normalize_ip()
@@ -112,13 +140,12 @@ class Player(pg.sprite.Sprite):
 
         
     def spell_charge(self):
-        self.input_locked()
         print("charged!")
+        self.timers['spell fire'].activate()
 
 
-    def spell_activate(self):
-        #if spell keybind activated then fire off a spell
-        pass
+    def spell_fire(self):
+        print(self.selected_spell)
 
     def lock_input(self):
         self.locked = True
