@@ -2,6 +2,7 @@ import pygame as pg
 from settings import *
 from support import load_sheet, import_assets, import_folder, import_folder_dict
 from timehandle import Timer
+from sprites import Generic, Projectile
 
 class Player(pg.sprite.Sprite):
     def __init__(self, pos, groups):
@@ -21,8 +22,6 @@ class Player(pg.sprite.Sprite):
 
         self.right = True
 
-
-
         self.animations = { 
             "witch_idle" : load_sheet(f"Wizary\graphics\player\witch_idle.png", 32, 48),
             "witch_run" : load_sheet(f"Wizary\graphics\player\witch_run.png", 32, 48),
@@ -34,6 +33,7 @@ class Player(pg.sprite.Sprite):
 
         self.spells = [
             "ice_spike",
+            "basic",
             "ice_ball",
         ]
 
@@ -94,8 +94,27 @@ class Player(pg.sprite.Sprite):
         if keys_just_pressed[KEYBINDS['attack']]:
             self.timers['spell charge'].activate()
 
+        if pg.mouse.get_pressed()[0]:
+            self.shoot()
 
 
+
+    def shoot(self):
+        mouse_pos = pg.mouse.get_pos()
+        offset = pg.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        camera_offset = self.rect.center - offset  # get world offset from camera
+
+        world_mouse_pos = pg.Vector2(mouse_pos) + camera_offset
+        direction = world_mouse_pos - self.rect.center
+
+        if direction.length() > 0:
+            Projectile(
+                pos=self.rect.center,
+                direction=direction,
+                speed=300,
+                max_distance=500,
+                groups=self.groups()
+            )
 
 
     def get_status(self):

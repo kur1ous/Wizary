@@ -1,5 +1,15 @@
 import pygame as pg
-import os, sys
+import os, sys, random, math
+
+def get_spawn_position(player_pos, min_distance, spawn_area):
+    while True:
+        x = random.randint(spawn_area.left, spawn_area.right)
+        y = random.randint(spawn_area.top, spawn_area.bottom)
+        
+        spawn_pos = pg.Vector2(x, y)
+
+        if spawn_pos.distance_to(player_pos) >= min_distance:
+            return spawn_pos
 
     
 def load_sheet(filename, frame_width, frame_height):
