@@ -17,13 +17,22 @@ class Enemy(pg.sprite.Sprite):
         self.z = LAYERS['main']  
 
     def movement(self, dt):
-        direction = self.player.pos - self.pos
-        if direction.length() > 1:
-            direction.normalize_ip()
-            self.pos += direction * self.speed * dt
+        self.direction = self.player.pos - self.pos
+        if self.direction.length() > 1:
+            self.direction.normalize_ip()
+            self.pos += self.direction * self.speed * dt
             self.rect.center = self.pos
 
+    def take_damage(self, damage):
+        self.kill()
+
+    def attack(self):
+        if self.rect.colliderect(self.player.rect):
+            self.kill()
+            self.player.take_damage(5)
+
     def update(self, dt):
+        self.attack()
         self.movement(dt)
 
 

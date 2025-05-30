@@ -8,7 +8,7 @@ class Player(pg.sprite.Sprite):
     def __init__(self, pos, groups):
         super().__init__(groups)
 
-
+        self.health = 100
 
         self.frame_index = 0
 
@@ -171,6 +171,12 @@ class Player(pg.sprite.Sprite):
 
     def unlock_input(self):
         self.locked = False
+
+    def take_damage(self, damage):
+        self.damage = damage
+        self.health -= self.damage
+        print(self.health)
+        
 
     def update(self, dt):
         self.get_status()
