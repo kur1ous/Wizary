@@ -16,3 +16,10 @@ LAYERS = {
     'main' : 7,
     'ground' : 1,
 }
+
+GAME_STATE = {
+    'START' : True,
+    'PLAYING' : False,
+    'PAUSE' : False,
+    'OVER' : False,
+}

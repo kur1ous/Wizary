@@ -5,6 +5,7 @@ from sprites import Generic
 from settings import *
 from support import get_spawn_position
 from enemies import Enemy
+from overlay import Overlay
 
 class Level:
 	def __init__(self):
@@ -27,10 +28,7 @@ class Level:
 
 		self.player = Player((100, 100), self.all_sprites)
 
-
-
-		print(f"PLAYER Z: {self.player.z}")
-		print(f"GROUND Z: {self.ground.z}")
+		self.overlay = Overlay(self.player)
 
 
 	def enemy_spawn(self, dt):
@@ -47,6 +45,9 @@ class Level:
 		self.enemy_spawn(dt)
 		self.all_sprites.draw(self.display_surface, (self.player.rect.center))
 		self.all_sprites.update(dt)
+		self.overlay.update()
+		self.overlay.draw(self.display_surface)
+
 
 		
 

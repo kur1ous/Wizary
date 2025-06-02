@@ -177,6 +177,8 @@ class Player(pg.sprite.Sprite):
         self.health -= self.damage
         print(self.health)
         
+    def death(self):
+        print("Game Over!")
 
     def update(self, dt):
         self.get_status()
