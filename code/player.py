@@ -179,6 +179,10 @@ class Player(pg.sprite.Sprite):
         
     def death(self):
         print("Game Over!")
+        GAME_STATE['PLAYING'] = False
+        GAME_STATE['START'] = False
+        GAME_STATE['PAUSE'] = False
+        GAME_STATE['OVER'] = True
 
     def update(self, dt):
         self.get_status()

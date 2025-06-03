@@ -16,6 +16,8 @@ class Game:
 				if event.type == pygame.QUIT:
 					pygame.quit()
 					sys.exit()
+
+				self.level.overlay.handle_event(event)
   
 			dt = self.clock.tick() / 1000
 			self.level.run(dt)

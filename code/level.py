@@ -42,11 +42,13 @@ class Level:
 
 	def run(self,dt):
 		self.display_surface.fill('white')
+		if GAME_STATE['START']:
+			self.overlay.draw(self.display_surface)
+			return
 		self.enemy_spawn(dt)
 		self.all_sprites.draw(self.display_surface, (self.player.rect.center))
 		self.all_sprites.update(dt)
-		self.overlay.update()
-		self.overlay.draw(self.display_surface)
+
 
 
 		
