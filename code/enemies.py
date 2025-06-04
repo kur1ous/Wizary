@@ -11,8 +11,11 @@ class Enemy(pg.sprite.Sprite):
         self.image.fill('red')
         self.rect = self.image.get_rect(center=pos)
         self.pos = pg.Vector2(pos)
+        self.hitbox = self.rect
         self.player = player
         self.speed = 40  
+
+        self.health = 100
 
         self.z = LAYERS['main']  
 
@@ -24,15 +27,25 @@ class Enemy(pg.sprite.Sprite):
             self.rect.center = self.pos
 
     def take_damage(self, damage):
-        self.kill()
+        self.health -= damage
+        if self.health <= 0:
+            self.death()
+
+    def check_if_hit(self):
+        if self.hitbox.colliderect(self.player.bullet.rect):
+            self.take_damage(5)
 
     def attack(self):
         if self.rect.colliderect(self.player.rect):
             self.kill()
             self.player.take_damage(5)
+        
+    def death(self):
+        self.kill()
 
     def update(self, dt):
         self.attack()
+        self.check_if_hit()
         self.movement(dt)
 
 

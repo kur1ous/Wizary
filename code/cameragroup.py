@@ -14,3 +14,6 @@ class CameraGroup(pygame.sprite.Group):
             for sprite in sorted(self.sprites(), key=lambda spr: (spr.z, spr.rect.centery)):
                 blit_pos = sprite.rect.topleft - offset
                 surface.blit(sprite.image, blit_pos)
+                hitbox = sprite.rect.copy()
+                hitbox.topleft -= offset
+                pygame.draw.rect(surface, "red", hitbox, 2)

@@ -24,6 +24,9 @@ class Projectile(Generic):
         self.max_distance = max_distance
         self.distance_traveled = 0
 
+
+
+
     def update(self, dt):
         movement = self.direction * self.speed * dt
         self.pos += movement

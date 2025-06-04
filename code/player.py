@@ -52,8 +52,9 @@ class Player(pg.sprite.Sprite):
 
 
         # self.image = self.frames[self.frame_index]
-        self.rect = self.image.get_rect(center=(pos))
+        self.rect = self.image.get_frect(center=(pos))
 
+        self.hitbox = self.rect
         self.direction = pg.Vector2()
         self.pos = pg.Vector2(self.rect.midbottom)
 
@@ -108,7 +109,7 @@ class Player(pg.sprite.Sprite):
         direction = world_mouse_pos - self.rect.center
 
         if direction.length() > 0:
-            Projectile(
+            self.bullet = Projectile(
                 pos=self.rect.center,
                 direction=direction,
                 speed=300,
