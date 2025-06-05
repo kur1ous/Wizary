@@ -5,10 +5,12 @@ from timehandle import Timer
 from sprites import Generic, Projectile
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, pos, groups):
+    def __init__(self, pos, projectiles, groups):
         super().__init__(groups)
 
         self.health = 100
+
+        self.projectile_group = projectiles
 
         self.frame_index = 0
 
@@ -95,7 +97,7 @@ class Player(pg.sprite.Sprite):
         if keys_just_pressed[KEYBINDS['attack']]:
             self.timers['spell charge'].activate()
 
-        if pg.mouse.get_pressed()[0]:
+        if pg.mouse.get_just_pressed()[0]:
             self.shoot()
 
 
@@ -109,12 +111,12 @@ class Player(pg.sprite.Sprite):
         direction = world_mouse_pos - self.rect.center
 
         if direction.length() > 0:
-            self.bullet = Projectile(
+            Projectile(
                 pos=self.rect.center,
                 direction=direction,
                 speed=300,
                 max_distance=500,
-                groups=self.groups()
+                groups=[self.groups(), self.projectile_group]
             )
 
 

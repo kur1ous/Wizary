@@ -14,6 +14,8 @@ class Level:
 		self.display_surface = pg.display.get_surface()
 		self.all_sprites = CameraGroup()
 
+		self.projectiles = pg.sprite.Group()
+
 		# Enemy Spawn Handling
 		self.spawn_timer = 0
 		self.spawn_interval = 5
@@ -26,7 +28,7 @@ class Level:
 		ground_image = pg.image.load("Wizary\graphics\world\Scene Overview.png").convert_alpha()
 		self.ground = Generic((0,0), ground_image, LAYERS['ground'], self.all_sprites)
 
-		self.player = Player((100, 100), self.all_sprites)
+		self.player = Player((100, 100), self.projectiles, self.all_sprites)
 
 		self.overlay = Overlay(self.player)
 

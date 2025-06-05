@@ -2,6 +2,7 @@ import pygame as pg
 from settings import *
 import math
 from support import get_spawn_position
+from timehandle import Timer
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self, pos, player, groups):
@@ -19,6 +20,10 @@ class Enemy(pg.sprite.Sprite):
 
         self.z = LAYERS['main']  
 
+        self.abilities = {
+            'attack' : Timer(2)
+        }
+
     def movement(self, dt):
         self.direction = self.player.pos - self.pos
         if self.direction.length() > 1:
@@ -28,23 +33,39 @@ class Enemy(pg.sprite.Sprite):
 
     def take_damage(self, damage):
         self.health -= damage
-        if self.health <= 0:
+        print(self.health)
+        if self.health == 0:
             self.death()
 
     def check_if_hit(self):
-        if self.hitbox.colliderect(self.player.bullet.rect):
-            self.take_damage(5)
+        for projectile in self.player.projectile_group:
+            if self.hitbox.colliderect(projectile.hitbox):
+                self.take_damage(5)
+                projectile.kill()  
+        
+    def check_if_can_attack(self):
+        if self.rect.colliderect(self.player.rect): return True
+
+    def attack_handle(self):
+        if self.check_if_can_attack() and not self.abilities['attack'].active:
+            self.attack()
+            self.abilities['attack'].activate()
 
     def attack(self):
-        if self.rect.colliderect(self.player.rect):
-            self.kill()
-            self.player.take_damage(5)
+        self.player.take_damage(5)
         
     def death(self):
         self.kill()
+    
+    def timer_handle(self, dt):
+        for timer in self.abilities.values():
+            timer.update(dt)
 
     def update(self, dt):
-        self.attack()
+
+        self.check_if_can_attack()
+        self.timer_handle(dt)
+        self.attack_handle()
         self.check_if_hit()
         self.movement(dt)
 
