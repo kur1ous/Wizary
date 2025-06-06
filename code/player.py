@@ -3,12 +3,15 @@ from settings import *
 from support import load_sheet, import_assets, import_folder, import_folder_dict
 from timehandle import Timer
 from sprites import Generic, Projectile
+from mana import Mana
 
 class Player(pg.sprite.Sprite):
     def __init__(self, pos, projectiles, groups):
         super().__init__(groups)
 
         self.health = 100
+
+        self.mana = Mana(100)
 
         self.projectile_group = projectiles
 
@@ -97,8 +100,9 @@ class Player(pg.sprite.Sprite):
         if keys_just_pressed[KEYBINDS['attack']]:
             self.timers['spell charge'].activate()
 
-        if pg.mouse.get_just_pressed()[0]:
+        if pg.mouse.get_just_pressed()[0] and self.mana.current_mana >= 3:
             self.shoot()
+            self.mana.mana_use(3)
 
 
 
@@ -187,9 +191,14 @@ class Player(pg.sprite.Sprite):
         GAME_STATE['PAUSE'] = False
         GAME_STATE['OVER'] = True
 
+    def can_regen_mana(self):
+        if self.status == "witch_idle":
+            self.mana.mana_regen(4)
+
     def update(self, dt):
         self.get_status()
         self.animate(dt)
+        self.can_regen_mana()
         self.input()
         self.update_timers(dt)
         self.movement(dt)
