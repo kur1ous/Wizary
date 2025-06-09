@@ -24,9 +24,6 @@ class Projectile(Generic):
         self.max_distance = max_distance
         self.distance_traveled = 0
 
-
-
-
     def update(self, dt):
         movement = self.direction * self.speed * dt
         self.pos += movement
@@ -36,3 +33,13 @@ class Projectile(Generic):
 
         if self.distance_traveled >= self.max_distance:
             self.kill()
+
+class Metor(Generic):
+    def __init__(self, pos, surface, z, groups):
+        super().__init__(pos, surface, z, groups)
+
+        surface = pg.Surface((50,50), pg.SRCALPHA)
+        surface.fill("#afbeed")
+
+        self.pos = pg.Vector2(pos)
+        
