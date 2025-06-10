@@ -42,4 +42,4 @@ class Metor(Generic):
         surface.fill("#afbeed")
 
         self.pos = pg.Vector2(pos)
-        
+    
