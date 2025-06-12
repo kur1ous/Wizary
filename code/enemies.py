@@ -1,7 +1,7 @@
 import pygame as pg
 from settings import *
 import math
-from support import get_spawn_position
+from support import get_spawn_position, load_sheet
 from timehandle import Timer
 
 class Enemy(pg.sprite.Sprite):
@@ -48,11 +48,11 @@ class Enemy(pg.sprite.Sprite):
 
     def attack_handle(self):
         if self.check_if_can_attack() and not self.abilities['attack'].active:
-            self.attack()
+            self.attack(5)
             self.abilities['attack'].activate()
 
-    def attack(self):
-        self.player.take_damage(5)
+    def attack(self, damage):
+        self.player.take_damage(damage)
         
     def death(self):
         self.kill()
