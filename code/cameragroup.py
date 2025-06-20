@@ -16,4 +16,4 @@ class CameraGroup(pygame.sprite.Group):
                 surface.blit(sprite.image, blit_pos)
                 hitbox = sprite.rect.copy()
                 hitbox.topleft -= offset
-                pygame.draw.rect(surface, "red", hitbox, 2)
+                # pygame.draw.rect(surface, "red", hitbox, 2)

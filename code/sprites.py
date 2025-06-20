@@ -13,10 +13,14 @@ class Generic(pg.sprite.Sprite):
 
 
 class Projectile(Generic):
-    def __init__(self, pos, direction, speed, max_distance, groups):
-        surface = pg.Surface((8,8), pg.SRCALPHA)
+    def __init__(self, pos, direction, speed, max_distance, radius, dmg, groups):
+        self.radius = radius
+        surface = pg.Surface((8*self.radius,8*self.radius), pg.SRCALPHA)
         surface.fill("cyan")
+
         super().__init__(pos, surface, LAYERS['main'], groups)
+
+        self.damage = dmg
 
         self.pos = pg.Vector2(pos)
         self.direction = direction.normalize()
@@ -28,7 +32,7 @@ class Projectile(Generic):
         movement = self.direction * self.speed * dt
         self.pos += movement
         self.distance_traveled += movement.length()
-        self.rect.center = self.pos  # Move image and hitbox
+        self.rect.center = self.pos  
         self.hitbox.center = self.rect.center
 
         if self.distance_traveled >= self.max_distance:

@@ -16,6 +16,7 @@ class Enemy(pg.sprite.Sprite):
         self.player = player
         self.speed = 40  
 
+
         self.health = 100
 
         self.z = LAYERS['main']  
@@ -34,13 +35,14 @@ class Enemy(pg.sprite.Sprite):
     def take_damage(self, damage):
         self.health -= damage
         print(self.health)
-        if self.health == 0:
+        if self.health <= 0:
             self.death()
+            self.player.addscore(1)
 
     def check_if_hit(self):
         for projectile in self.player.projectile_group:
             if self.hitbox.colliderect(projectile.hitbox):
-                self.take_damage(5)
+                self.take_damage(getattr(projectile, 'damage', 0))
                 projectile.kill()  
         
     def check_if_can_attack(self):

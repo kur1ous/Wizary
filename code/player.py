@@ -24,16 +24,16 @@ class Player(pg.sprite.Sprite):
         self.status = 'witch_idle'
 
         self.z = LAYERS['main']
-
+        self.score = 0
         self.right = True
 
         self.animations = { 
-            "witch_idle" : load_sheet(f"Wizary\graphics\player\witch_idle.png", 32, 48),
-            "witch_run" : load_sheet(f"Wizary\graphics\player\witch_run.png", 32, 48),
-            "witch_charge" : load_sheet(f"Wizary\graphics\player\witch_charge.png", 48, 48),
-            "witch_attack" : load_sheet(f"Wizary\graphics\player\witch_attack.png", 104, 46),
-            "witch_damage" : load_sheet(f"Wizary\graphics\player\witch_damage.png", 32, 48),
-            "witch_death" : load_sheet(f"Wizary\graphics\player\witch_death.png", 32, 40)
+            "witch_idle" : load_sheet(f"graphics\player\witch_idle.png", 32, 48),
+            "witch_run" : load_sheet(f"graphics\player\witch_run.png", 32, 48),
+            "witch_charge" : load_sheet(f"graphics\player\witch_charge.png", 48, 48),
+            "witch_attack" : load_sheet(f"graphics\player\witch_attack.png", 104, 46),
+            "witch_damage" : load_sheet(f"graphics\player\witch_damage.png", 32, 48),
+            "witch_death" : load_sheet(f"graphics\player\witch_death.png", 32, 40)
         }
 
         self.spells = [
@@ -45,7 +45,7 @@ class Player(pg.sprite.Sprite):
         self.selected_spell = self.spells[0]
 
         self.timers = {
-            'spell charge' : Timer(2, self.spell_charge),
+            'mana charge' : Timer(1, self.mana_charge),
             'spell fire' : Timer(0.999, self.spell_fire)
         }
 
@@ -54,9 +54,6 @@ class Player(pg.sprite.Sprite):
 
         print(f"frame: {self.frames}, number: {len(self.frames)}")
         
-
-
-        # self.image = self.frames[self.frame_index]
         self.rect = self.image.get_frect(center=(pos))
 
         self.hitbox = self.rect
@@ -75,12 +72,16 @@ class Player(pg.sprite.Sprite):
         return frame    
     @property
     def locked(self):
-        return self.timers['spell charge'].active or self.timers['spell fire'].active
+        return self.timers['mana charge'].active or self.timers['spell fire'].active
 
     def animate(self, dt):
         self.frame_index += self.animation_speed * dt
         self.frame_index %= len(self.frames)
-        # self.image = self.frames[int(self.frame_index)]
+
+
+    def addscore(self, amount):
+        self.addscore =+ amount
+        print(self.score)
 
 
     def input(self):
@@ -97,12 +98,16 @@ class Player(pg.sprite.Sprite):
             self.right = False
 
 
-        if keys_just_pressed[KEYBINDS['attack']]:
-            self.timers['spell charge'].activate()
+        if keys_just_pressed[KEYBINDS['mana charge']]:
+            self.timers['mana charge'].activate()
 
         if pg.mouse.get_just_pressed()[0] and self.mana.current_mana >= 3:
             self.shoot()
             self.mana.mana_use(3)
+
+        if pg.mouse.get_just_pressed()[2] and self.mana.current_mana >= 8:
+            self.big_shot()
+            self.mana.mana_use(8)
 
 
 
@@ -120,15 +125,34 @@ class Player(pg.sprite.Sprite):
                 direction=direction,
                 speed=300,
                 max_distance=500,
+                radius=1,
+                dmg = 3,
                 groups=[self.groups(), self.projectile_group]
             )
 
+    def big_shot(self):
+        mouse_pos = pg.mouse.get_pos()
+        offset = pg.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        camera_offset = self.rect.center - offset
+        world_mouse_pos = pg.Vector2(mouse_pos) + camera_offset
+        direction = world_mouse_pos - self.rect.center
+
+        if direction.length() > 0:
+            Projectile(
+                pos=self.rect.center,
+                direction=direction,
+                speed=100, 
+                max_distance=200, 
+                radius=3,  
+                dmg = 10,
+                groups=[self.groups(), self.projectile_group]
+            )
 
     def get_status(self):
         self.status = self.status.split("_")[0]
         keys = pg.key.get_pressed()
 
-        if self.timers['spell charge'].active:
+        if self.timers['mana charge'].active:
             self.status += "_charge"
 
         elif self.timers['spell fire'].active:
@@ -139,15 +163,6 @@ class Player(pg.sprite.Sprite):
 
         elif self.direction.magnitude() == 0:
             self.status += "_idle"
-
-
-
-
-        # elif self.spell_charge(True):
-        #     self.status += "_charge"
-        
-        
-        # print(self.status)
 
 
     def update_timers(self, dt):
@@ -163,12 +178,10 @@ class Player(pg.sprite.Sprite):
         self.pos.x += self.direction.x * dt * self.base_speed
         self.pos.y += self.direction.y * dt * self.base_speed
         self.rect.center = self.pos
-
         
-    def spell_charge(self):
+    def mana_charge(self):
         print("charged!")
-        self.timers['spell fire'].activate()
-
+        self.mana.mana_regen(10)
 
     def spell_fire(self):
         print(self.selected_spell)
@@ -182,23 +195,19 @@ class Player(pg.sprite.Sprite):
     def take_damage(self, damage):
         self.damage = damage
         self.health -= self.damage
+        if self.health <= 0:
+            self.death()
         print(self.health)
         
     def death(self):
         print("Game Over!")
-        GAME_STATE['PLAYING'] = False
-        GAME_STATE['START'] = False
-        GAME_STATE['PAUSE'] = False
+        self.kill()
         GAME_STATE['OVER'] = True
-
-    def can_regen_mana(self):
-        if self.status == "witch_idle":
-            self.mana.mana_regen(4)
 
     def update(self, dt):
         self.get_status()
         self.animate(dt)
-        self.can_regen_mana()
         self.input()
+
         self.update_timers(dt)
         self.movement(dt)
